@@ -3,24 +3,45 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  /// primary = #FF5F00
-  static const Color primary = Color(0xffFF5F00);
+  /// Primary Emerald
+  static const Color primary = Color(0xFF10B981);
 
-  /// blue = #3C9AFB
-  static const Color blue = Color(0xff3C9AFB);
+  /// Accent Amber
+  static const Color accent = Color(0xFFFBBF24);
 
-  /// gray = #475569
-  static const Color gray = Color(0xff475569);
+  /// Secondary Teal (lebih gelap dari primary)
+  static const Color secondary = Color(0xFF0F766E);
 
-  /// black = #000000
-  static const Color black = Color(0xff000000);
+  /// Text Primary
+  static const Color black = Color(0xFF1F2937);
 
-  /// white = #ffffff
-  static const Color white = Color(0xffffffff);
+  /// Background
+  static const Color white = Color(0xFFF8FAFC);
 
-  /// stroke = #E2E8F0
-  static const Color stroke = Color(0xffE2E8F0);
+  /// Text Secondary
+  static const Color gray = Color(0xFF64748B);
 
-  /// red = #FF0000
-  static const Color red = Color(0xffFF0000);
+  /// Border
+  static const Color stroke = Color(0xFFE5E7EB);
+
+  /// Error
+  static const Color red = Color(0xFFEF4444);
+
+  /// Success
+  static const Color success = Color(0xFF10B981);
+
+  /// Info
+  static const Color blue = Color(0xFF0EA5E9);
+
+  /// Warning
+  static const Color warning = Color(0xFFF59E0B);
+
+  /// Card Background
+  static const Color card = Color(0xFFFFFFFF);
+
+  /// Soft Green Background
+  static const Color primaryLight = Color(0xFFD1FAE5);
+
+  /// Soft Yellow Background
+  static const Color accentLight = Color(0xFFFEF3C7);
 }

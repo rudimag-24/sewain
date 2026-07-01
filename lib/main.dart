@@ -3,6 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sewain/core/constants/variables.dart';
 import 'package:sewain/core/theme/app_theme.dart';
 import 'package:sewain/data/datasources/auth/auth_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_bill_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_contract_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_contract_request_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_dashboard_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_payment_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_property_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_report_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_room_remote_datasource.dart';
+import 'package:sewain/data/datasources/owner/owner_tenant_remote_datasource.dart';
 import 'package:sewain/data/datasources/tenant/tenant_bill_remote_datasource.dart';
 import 'package:sewain/data/datasources/tenant/tenant_contract_remote_datasource.dart';
 import 'package:sewain/data/datasources/tenant/tenant_contract_request_remote_datasource.dart';
@@ -12,6 +21,15 @@ import 'package:sewain/data/datasources/tenant/tenant_payment_remote_datasource.
 import 'package:sewain/data/datasources/tenant/tenant_profile_remote_datasource.dart';
 import 'package:sewain/presentasion/auth/auth/auth_bloc.dart';
 import 'package:sewain/presentasion/auth/splash_page.dart';
+import 'package:sewain/presentasion/bloc/owner_bill/owner_bill_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_contract/owner_contract_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_contract_request/owner_contract_request_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_dashboard/owner_dashboard_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_payment/owner_payment_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_property/owner_property_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_report/owner_report_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_room/owner_room_bloc.dart';
+import 'package:sewain/presentasion/bloc/owner_tenant/owner_tenant_bloc.dart';
 import 'package:sewain/presentasion/bloc/tenant_bill/tenant_bill_bloc.dart';
 import 'package:sewain/presentasion/bloc/tenant_contract_request/tenant_contract_request_bloc.dart';
 import 'package:sewain/presentasion/bloc/tenant_dashboard/tenant_dashboard_bloc.dart';
@@ -69,6 +87,47 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               TenantPaymentBloc(TenantPaymentRemoteDatasource()),
+        ),
+
+        // ############################### OWNER ###########################
+        BlocProvider(
+          create: (context) =>
+              OwnerDashboardBloc(OwnerDashboardRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) =>
+              OwnerPropertyBloc(OwnerPropertyRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) => OwnerRoomBloc(OwnerRoomRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) => OwnerTenantBloc(OwnerTenantRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) =>
+              OwnerContractBloc(OwnerContractRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) => OwnerBillBloc(OwnerBillRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) => OwnerPaymentBloc(OwnerPaymentRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) =>
+              OwnerContractRequestBloc(OwnerContractRequestRemoteDatasource()),
+        ),
+
+        BlocProvider(
+          create: (context) => OwnerReportBloc(OwnerReportRemoteDatasource()),
         ),
       ],
       child: MaterialApp(

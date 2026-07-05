@@ -6,51 +6,67 @@ import 'package:sewain/data/models/request/tenant/tenant_profile_request_model.d
 import 'package:sewain/data/models/response/tenant/tenant_profile_response_model.dart';
 
 class TenantProfileRemoteDatasource {
-  Future<Either<String, TenantProfileResponseModel>> getProfile() async {
-    final url = Uri.parse('${Variables.baseUrl}/api/tenant/profile');
-
+  Future<Map<String, String>?> _headers() async {
     final authData = await AuthLocalDatasource().getAuthData();
 
-    final headers = {
+    if (authData?.token == null) return null;
+
+    return {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authData?.token}',
+      'Authorization': 'Bearer ${authData!.token}',
     };
+  }
 
-    final response = await http.get(url, headers: headers);
+  Future<Either<String, TenantProfileResponseModel>> getProfile() async {
+    try {
+      final headers = await _headers();
+      if (headers == null) {
+        return const Left('Sesi login tidak ditemukan, silakan login ulang.');
+      }
 
-    if (response.statusCode == 200) {
-      return Right(TenantProfileResponseModel.fromJson(response.body));
-    } else {
-      return Left('profile failed (${response.statusCode}): ${response.body}');
+      final url = Uri.parse('${Variables.baseUrl}/api/tenant/profile');
+
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        return Right(TenantProfileResponseModel.fromJson(response.body));
+      } else {
+        return Left(
+          'profile failed (${response.statusCode}): ${response.body}',
+        );
+      }
+    } catch (e) {
+      return Left('Terjadi kesalahan: $e');
     }
   }
 
   Future<Either<String, TenantProfileUpdateResponseModel>> updateProfile(
     TenantProfileUpdateRequestModel request,
   ) async {
-    final url = Uri.parse('${Variables.baseUrl}/api/tenant/profile');
+    try {
+      final headers = await _headers();
+      if (headers == null) {
+        return const Left('Sesi login tidak ditemukan, silakan login ulang.');
+      }
 
-    final authData = await AuthLocalDatasource().getAuthData();
+      final url = Uri.parse('${Variables.baseUrl}/api/tenant/profile');
 
-    final headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authData?.token}',
-    };
+      final response = await http
+          .put(url, headers: headers, body: request.toJson())
+          .timeout(const Duration(seconds: 15));
 
-    final response = await http.put(
-      url,
-      headers: headers,
-      body: request.toJson(),
-    );
-
-    if (response.statusCode == 200) {
-      return Right(TenantProfileUpdateResponseModel.fromJson(response.body));
-    } else {
-      return Left(
-        'update profile failed (${response.statusCode}): ${response.body}',
-      );
+      if (response.statusCode == 200) {
+        return Right(TenantProfileUpdateResponseModel.fromJson(response.body));
+      } else {
+        return Left(
+          'update profile failed (${response.statusCode}): ${response.body}',
+        );
+      }
+    } catch (e) {
+      return Left('Terjadi kesalahan: $e');
     }
   }
 }

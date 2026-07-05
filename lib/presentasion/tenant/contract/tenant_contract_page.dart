@@ -15,15 +15,17 @@ class _TenantContractPageState extends State<TenantContractPage> {
   @override
   void initState() {
     super.initState();
+    _getContract();
+  }
+
+  void _getContract() {
     context.read<TenantContractBloc>().add(
       const TenantContractEvent.getContract(),
     );
   }
 
   Future<void> _refresh() async {
-    context.read<TenantContractBloc>().add(
-      const TenantContractEvent.getContract(),
-    );
+    _getContract();
   }
 
   @override
@@ -31,7 +33,15 @@ class _TenantContractPageState extends State<TenantContractPage> {
     return Scaffold(
       backgroundColor: const Color(0xffF8FAFC),
       appBar: AppBar(title: const Text('Detail Kontrak')),
-      body: BlocBuilder<TenantContractBloc, TenantContractState>(
+      body: BlocConsumer<TenantContractBloc, TenantContractState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            error: (message) {
+              context.showDialogError('Gagal Memuat Kontrak', message);
+            },
+            orElse: () {},
+          );
+        },
         builder: (context, state) {
           return state.maybeWhen(
             loading: () => const Center(child: CircularProgressIndicator()),
@@ -77,19 +87,46 @@ class _TenantContractPageState extends State<TenantContractPage> {
                 ),
               );
             },
-            error: (message) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.red),
-                ),
-              ),
-            ),
+            error: (message) => _errorState(message),
             orElse: () => const SizedBox(),
           );
         },
+      ),
+    );
+  }
+
+  Widget _errorState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 80,
+              color: AppColors.red,
+            ),
+            const SpaceHeight(16),
+            const Text(
+              'Gagal Memuat Kontrak',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
+            const SpaceHeight(8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.gray),
+            ),
+            const SpaceHeight(24),
+            Button.filled(
+              label: 'Coba Lagi',
+              width: 180,
+              height: 46,
+              onPressed: _getContract,
+            ),
+          ],
+        ),
       ),
     );
   }

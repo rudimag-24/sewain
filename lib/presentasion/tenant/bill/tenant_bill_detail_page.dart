@@ -18,6 +18,10 @@ class _TenantBillDetailPageState extends State<TenantBillDetailPage> {
   @override
   void initState() {
     super.initState();
+    _getDetail();
+  }
+
+  void _getDetail() {
     context.read<TenantBillBloc>().add(TenantBillEvent.getDetail(widget.id));
   }
 
@@ -26,7 +30,15 @@ class _TenantBillDetailPageState extends State<TenantBillDetailPage> {
     return Scaffold(
       backgroundColor: const Color(0xffF8FAFC),
       appBar: AppBar(title: const Text('Detail Tagihan')),
-      body: BlocBuilder<TenantBillBloc, TenantBillState>(
+      body: BlocConsumer<TenantBillBloc, TenantBillState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            error: (message) {
+              context.showDialogError('Gagal Memuat Tagihan', message);
+            },
+            orElse: () {},
+          );
+        },
         builder: (context, state) {
           return state.maybeWhen(
             loading: () => const Center(child: CircularProgressIndicator()),
@@ -55,19 +67,46 @@ class _TenantBillDetailPageState extends State<TenantBillDetailPage> {
                 ],
               );
             },
-            error: (message) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppColors.red),
-                ),
-              ),
-            ),
+            error: (message) => _errorState(message),
             orElse: () => const SizedBox(),
           );
         },
+      ),
+    );
+  }
+
+  Widget _errorState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 80,
+              color: AppColors.red,
+            ),
+            const SpaceHeight(16),
+            const Text(
+              'Gagal Memuat Tagihan',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
+            const SpaceHeight(8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.gray),
+            ),
+            const SpaceHeight(24),
+            Button.filled(
+              label: 'Coba Lagi',
+              width: 180,
+              height: 46,
+              onPressed: _getDetail,
+            ),
+          ],
+        ),
       ),
     );
   }

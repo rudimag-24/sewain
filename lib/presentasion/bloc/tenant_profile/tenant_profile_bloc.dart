@@ -21,12 +21,16 @@ class TenantProfileBloc extends Bloc<TenantProfileEvent, TenantProfileState> {
   ) async {
     emit(const TenantProfileState.loading());
 
-    final result = await remoteDatasource.getProfile();
+    try {
+      final result = await remoteDatasource.getProfile();
 
-    result.fold(
-      (error) => emit(TenantProfileState.error(error)),
-      (data) => emit(TenantProfileState.loaded(data)),
-    );
+      result.fold(
+        (error) => emit(TenantProfileState.error(error)),
+        (data) => emit(TenantProfileState.loaded(data)),
+      );
+    } catch (e) {
+      emit(TenantProfileState.error(e.toString()));
+    }
   }
 
   Future<void> _onUpdateProfile(
@@ -35,11 +39,15 @@ class TenantProfileBloc extends Bloc<TenantProfileEvent, TenantProfileState> {
   ) async {
     emit(const TenantProfileState.loading());
 
-    final result = await remoteDatasource.updateProfile(event.request);
+    try {
+      final result = await remoteDatasource.updateProfile(event.request);
 
-    result.fold(
-      (error) => emit(TenantProfileState.error(error)),
-      (data) => emit(TenantProfileState.success(data.message)),
-    );
+      result.fold(
+        (error) => emit(TenantProfileState.error(error)),
+        (data) => emit(TenantProfileState.success(data.message)),
+      );
+    } catch (e) {
+      emit(TenantProfileState.error(e.toString()));
+    }
   }
 }

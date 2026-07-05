@@ -4,6 +4,7 @@ part of 'tenant_bill_bloc.dart';
 class TenantBillState with _$TenantBillState {
   const factory TenantBillState.initial() = _Initial;
 
+ 
   const factory TenantBillState.loading() = _Loading;
 
   const factory TenantBillState.listLoaded({

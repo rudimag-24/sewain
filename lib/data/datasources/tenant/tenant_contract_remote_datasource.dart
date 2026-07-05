@@ -6,22 +6,36 @@ import 'package:sewain/data/models/response/tenant/tenant_contract_response_mode
 
 class TenantContractRemoteDatasource {
   Future<Either<String, TenantContractResponseModel>> getContract() async {
-    final url = Uri.parse('${Variables.baseUrl}/api/tenant/contract');
+    try {
+      final authData = await AuthLocalDatasource().getAuthData();
 
-    final authData = await AuthLocalDatasource().getAuthData();
+      if (authData?.token == null) {
+        return const Left('Sesi login tidak ditemukan, silakan login ulang.');
+      }
 
-    final headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${authData?.token}',
-    };
+      final url = Uri.parse('${Variables.baseUrl}/api/tenant/contract');
 
-    final response = await http.get(url, headers: headers);
+      final headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${authData!.token}',
+      };
 
-    if (response.statusCode == 200 || response.statusCode == 404) {
-      return Right(TenantContractResponseModel.fromJson(response.body));
-    } else {
-      return Left('contract failed (${response.statusCode}): ${response.body}');
+      final response = await http
+          .get(url, headers: headers)
+          .timeout(const Duration(seconds: 15));
+
+      // 404 di sini artinya "tidak ada kontrak aktif", bukan error —
+      // body-nya tetap JSON valid ({ message, data: null }), jadi tetap diparse sebagai Right.
+      if (response.statusCode == 200 || response.statusCode == 404) {
+        return Right(TenantContractResponseModel.fromJson(response.body));
+      } else {
+        return Left(
+          'contract failed (${response.statusCode}): ${response.body}',
+        );
+      }
+    } catch (e) {
+      return Left('Terjadi kesalahan: $e');
     }
   }
 }

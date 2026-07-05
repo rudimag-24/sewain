@@ -21,11 +21,15 @@ class TenantDashboardBloc
   ) async {
     emit(const TenantDashboardState.loading());
 
-    final result = await remoteDatasource.getDashboard();
+    try {
+      final result = await remoteDatasource.getDashboard();
 
-    result.fold(
-      (error) => emit(TenantDashboardState.error(error)),
-      (data) => emit(TenantDashboardState.loaded(data)),
-    );
+      result.fold(
+        (error) => emit(TenantDashboardState.error(error)),
+        (data) => emit(TenantDashboardState.loaded(data)),
+      );
+    } catch (e) {
+      emit(TenantDashboardState.error(e.toString()));
+    }
   }
 }

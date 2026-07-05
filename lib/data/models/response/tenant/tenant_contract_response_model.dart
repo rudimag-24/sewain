@@ -1,5 +1,20 @@
 import 'dart:convert';
 
+num? _toNum(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value;
+  if (value is String) return num.tryParse(value);
+  return null;
+}
+
+int? _toInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value) ?? num.tryParse(value)?.toInt();
+  return null;
+}
+
 class TenantContractResponseModel {
   final String? message;
   final TenantContractModel? data;
@@ -48,13 +63,13 @@ class TenantContractModel {
 
   factory TenantContractModel.fromMap(Map<String, dynamic> json) {
     return TenantContractModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       startDate: json['start_date']?.toString(),
       endDate: json['end_date']?.toString(),
-      monthlyPrice: json['monthly_price'],
-      deposit: json['deposit'],
+      monthlyPrice: _toNum(json['monthly_price']),
+      deposit: _toNum(json['deposit']),
       status: json['status']?.toString(),
-      remainingMonths: json['remaining_months'],
+      remainingMonths: _toInt(json['remaining_months']),
       notes: json['notes']?.toString(),
       room: json['room'] == null
           ? null

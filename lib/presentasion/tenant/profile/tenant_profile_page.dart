@@ -16,15 +16,17 @@ class _TenantProfilePageState extends State<TenantProfilePage> {
   @override
   void initState() {
     super.initState();
+    _getProfile();
+  }
+
+  void _getProfile() {
     context.read<TenantProfileBloc>().add(
       const TenantProfileEvent.getProfile(),
     );
   }
 
   Future<void> _refresh() async {
-    context.read<TenantProfileBloc>().add(
-      const TenantProfileEvent.getProfile(),
-    );
+    _getProfile();
   }
 
   @override
@@ -32,7 +34,15 @@ class _TenantProfilePageState extends State<TenantProfilePage> {
     return Scaffold(
       backgroundColor: const Color(0xffF8FAFC),
       body: SafeArea(
-        child: BlocBuilder<TenantProfileBloc, TenantProfileState>(
+        child: BlocConsumer<TenantProfileBloc, TenantProfileState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              error: (message) {
+                context.showDialogError('Gagal Memuat Profil', message);
+              },
+              orElse: () {},
+            );
+          },
           builder: (context, state) {
             return state.maybeWhen(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -74,23 +84,66 @@ class _TenantProfilePageState extends State<TenantProfilePage> {
                         label: 'Edit Profil',
                         icon: const Icon(Icons.edit, color: AppColors.white),
                       ),
+
+                      const SpaceHeight(24),
+                      Button.filled(
+                        color: AppColors.red,
+                        onPressed: () async {
+                          final result = await context.push(
+                            TenantProfileEditPage(initial: data),
+                          );
+
+                          if (result == true && mounted) {
+                            _refresh();
+                          }
+                        },
+                        label: 'Logout',
+                        icon: const Icon(Icons.logout, color: AppColors.white),
+                      ),
                     ],
                   ),
                 );
               },
-              error: (message) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.red),
-                  ),
-                ),
-              ),
+              error: (message) => _errorState(message),
               orElse: () => const SizedBox(),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _errorState(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 80,
+              color: AppColors.red,
+            ),
+            const SpaceHeight(16),
+            const Text(
+              'Gagal Memuat Profil',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
+            const SpaceHeight(8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.gray),
+            ),
+            const SpaceHeight(24),
+            Button.filled(
+              label: 'Coba Lagi',
+              width: 180,
+              height: 46,
+              onPressed: _getProfile,
+            ),
+          ],
         ),
       ),
     );

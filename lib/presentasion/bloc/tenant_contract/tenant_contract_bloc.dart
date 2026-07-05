@@ -21,11 +21,15 @@ class TenantContractBloc
   ) async {
     emit(const TenantContractState.loading());
 
-    final result = await remoteDatasource.getContract();
+    try {
+      final result = await remoteDatasource.getContract();
 
-    result.fold(
-      (error) => emit(TenantContractState.error(error)),
-      (data) => emit(TenantContractState.loaded(data)),
-    );
+      result.fold(
+        (error) => emit(TenantContractState.error(error)),
+        (data) => emit(TenantContractState.loaded(data)),
+      );
+    } catch (e) {
+      emit(TenantContractState.error(e.toString()));
+    }
   }
 }

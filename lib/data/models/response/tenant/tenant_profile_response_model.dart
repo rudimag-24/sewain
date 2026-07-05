@@ -1,5 +1,21 @@
 import 'dart:convert';
 
+num? _toNum(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value;
+  if (value is String) return num.tryParse(value);
+  return null;
+}
+
+int? _toInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String)
+    return int.tryParse(value) ?? num.tryParse(value)?.toInt();
+  return null;
+}
+
 class TenantProfileResponseModel {
   final int? id;
   final String? name;
@@ -24,7 +40,7 @@ class TenantProfileResponseModel {
 
   factory TenantProfileResponseModel.fromMap(Map<String, dynamic> json) {
     return TenantProfileResponseModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       name: json['name']?.toString(),
       email: json['email']?.toString(),
       phone: json['phone']?.toString(),
@@ -58,7 +74,7 @@ class TenantActiveContractModel {
       property: json['property']?.toString(),
       address: json['address']?.toString(),
       endDate: json['end_date']?.toString(),
-      monthlyPrice: json['monthly_price'],
+      monthlyPrice: _toNum(json['monthly_price']),
     );
   }
 }
@@ -92,7 +108,7 @@ class TenantProfileUpdateDataModel {
 
   factory TenantProfileUpdateDataModel.fromMap(Map<String, dynamic> json) {
     return TenantProfileUpdateDataModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       name: json['name']?.toString(),
       email: json['email']?.toString(),
       phone: json['phone']?.toString(),

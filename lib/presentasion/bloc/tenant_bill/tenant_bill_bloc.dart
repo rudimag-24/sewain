@@ -18,18 +18,22 @@ class TenantBillBloc extends Bloc<TenantBillEvent, TenantBillState> {
   Future<void> _onGetList(_GetList event, Emitter<TenantBillState> emit) async {
     emit(const TenantBillState.loading());
 
-    final result = await remoteDatasource.list(status: event.status);
+    try {
+      final result = await remoteDatasource.list(status: event.status);
 
-    result.fold(
-      (error) => emit(TenantBillState.error(error)),
-      (data) => emit(
-        TenantBillState.listLoaded(
-          items: data.data,
-          message: data.message,
-          status: event.status,
+      result.fold(
+        (error) => emit(TenantBillState.error(error)),
+        (data) => emit(
+          TenantBillState.listLoaded(
+            items: data.data,
+            message: data.message,
+            status: event.status,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      emit(TenantBillState.error(e.toString()));
+    }
   }
 
   Future<void> _onGetDetail(
@@ -38,11 +42,15 @@ class TenantBillBloc extends Bloc<TenantBillEvent, TenantBillState> {
   ) async {
     emit(const TenantBillState.loading());
 
-    final result = await remoteDatasource.detail(event.id);
+    try {
+      final result = await remoteDatasource.detail(event.id);
 
-    result.fold(
-      (error) => emit(TenantBillState.error(error)),
-      (data) => emit(TenantBillState.detailLoaded(data.data)),
-    );
+      result.fold(
+        (error) => emit(TenantBillState.error(error)),
+        (data) => emit(TenantBillState.detailLoaded(data.data)),
+      );
+    } catch (e) {
+      emit(TenantBillState.error(e.toString()));
+    }
   }
 }

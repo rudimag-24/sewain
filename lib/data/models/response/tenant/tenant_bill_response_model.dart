@@ -2,6 +2,22 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sewain/core/core.dart';
 
+num? _toNum(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value;
+  if (value is String) return num.tryParse(value);
+  return null;
+}
+
+int? _toInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String)
+    return int.tryParse(value) ?? num.tryParse(value)?.toInt();
+  return null;
+}
+
 class TenantBillListResponseModel {
   final String? message;
   final List<TenantBillModel> data;
@@ -69,14 +85,14 @@ class TenantBillModel {
 
   factory TenantBillModel.fromMap(Map<String, dynamic> json) {
     return TenantBillModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       period: json['period']?.toString(),
-      rentAmount: json['rent_amount'],
-      electricityAmount: json['electricity_amount'],
-      waterAmount: json['water_amount'],
-      otherAmount: json['other_amount'],
+      rentAmount: _toNum(json['rent_amount']),
+      electricityAmount: _toNum(json['electricity_amount']),
+      waterAmount: _toNum(json['water_amount']),
+      otherAmount: _toNum(json['other_amount']),
       otherDescription: json['other_description']?.toString(),
-      totalAmount: json['total_amount'],
+      totalAmount: _toNum(json['total_amount']),
       dueDate: json['due_date']?.toString(),
       status: json['status']?.toString(),
       paidAt: json['paid_at']?.toString(),

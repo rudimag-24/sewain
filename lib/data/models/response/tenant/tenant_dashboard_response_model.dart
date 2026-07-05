@@ -1,5 +1,21 @@
 import 'dart:convert';
 
+num? _toNum(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value;
+  if (value is String) return num.tryParse(value);
+  return null;
+}
+
+int? _toInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String)
+    return int.tryParse(value) ?? num.tryParse(value)?.toInt();
+  return null;
+}
+
 class TenantDashboardResponseModel {
   final bool hasContract;
   final String? message;
@@ -30,7 +46,7 @@ class TenantDashboardResponseModel {
       currentBill: json['current_bill'] == null
           ? null
           : TenantCurrentBillModel.fromMap(json['current_bill']),
-      unpaidCount: json['unpaid_count'] ?? 0,
+      unpaidCount: _toInt(json['unpaid_count']) ?? 0,
       recentBills: (json['recent_bills'] as List? ?? [])
           .map((e) => TenantRecentBillModel.fromMap(e))
           .toList(),
@@ -59,13 +75,13 @@ class TenantContractSummaryModel {
 
   factory TenantContractSummaryModel.fromMap(Map<String, dynamic> json) {
     return TenantContractSummaryModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       roomCode: json['room_code']?.toString(),
       propertyName: json['property_name']?.toString(),
       propertyAddress: json['property_address']?.toString(),
       endDate: json['end_date']?.toString(),
-      remainingMonths: json['remaining_months'],
-      monthlyPrice: json['monthly_price'],
+      remainingMonths: _toInt(json['remaining_months']),
+      monthlyPrice: _toNum(json['monthly_price']),
     );
   }
 }
@@ -87,9 +103,9 @@ class TenantCurrentBillModel {
 
   factory TenantCurrentBillModel.fromMap(Map<String, dynamic> json) {
     return TenantCurrentBillModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       period: json['period']?.toString(),
-      totalAmount: json['total_amount'],
+      totalAmount: _toNum(json['total_amount']),
       status: json['status']?.toString(),
       dueDate: json['due_date']?.toString(),
     );
@@ -115,9 +131,9 @@ class TenantRecentBillModel {
 
   factory TenantRecentBillModel.fromMap(Map<String, dynamic> json) {
     return TenantRecentBillModel(
-      id: json['id'],
+      id: _toInt(json['id']),
       period: json['period']?.toString(),
-      totalAmount: json['total_amount'],
+      totalAmount: _toNum(json['total_amount']),
       status: json['status']?.toString(),
       dueDate: json['due_date']?.toString(),
       paidAt: json['paid_at']?.toString(),
